@@ -1,0 +1,21 @@
+graph TB
+    subgraph "Source Layer"
+        DaraReceiver[API,RAW HTML,CSV,XLSX]
+    end
+
+    subgraph "Python structures"
+        Extract[polars, pandas]
+    end
+
+    subgraph "Uniform interface"
+        Transform
+    end
+
+    subgraph "Save into Database"
+        Load
+    end
+
+
+DaraReceiver --> Extract
+Extract --> Transform
+Transform --> Load
