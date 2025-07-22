@@ -296,6 +296,9 @@ wheels = [
 name = "shop-scout"
 version = "0.0.2"
 source = { editable = "." }
+dependencies = [
+    { name = "pytest" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -315,6 +318,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.2.0" },
+    { name = "pytest", specifier = ">=8.4.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.12.4" },
 ]
 provides-extras = ["dev"]
