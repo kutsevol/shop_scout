@@ -28,6 +28,10 @@ jobs:
         run: |
           uv venv
 
+      - name: Change work directory
+        run: |
+          cd backend
+
       - name: Install dependencies
         run: |
           uv pip install -e .[dev]
