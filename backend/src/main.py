@@ -1,27 +1,34 @@
-from typing import Union
-
+import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI()
 
 
-class Item(BaseModel):
+class Store(BaseModel):
+    id: int
     name: str
-    price: float
-    is_offer: Union[bool, None] = None
 
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_index():
+    return {"Hello": "App"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+stores = [Store(id=1, name="Auchan"), Store(id=2, name="Metro")]
 
 
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+@app.get("/stores")
+def read_stores():
+    return stores
+
+
+@app.get("/store/{store_id}")
+def read_store(store_id: int):
+    for store in stores:
+        if store.id == store_id:
+            return {"id": store.id, "name": store.name}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
