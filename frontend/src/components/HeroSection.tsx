@@ -25,7 +25,7 @@ export const HeroSection: React.FC<Props> = ({ onClick }) => {
           width: "100%",
           height: "100%",
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(../../img/supermarket2.jpg)",
+            "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(/img/supermarket2.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           zIndex: 0,

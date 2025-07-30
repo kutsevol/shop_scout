@@ -30,35 +30,37 @@ export const ProductsList = () => {
       <Container maxWidth="lg">
         <Box
           sx={{
-            position: "flex",
+            display: "inline-block",
             width: "100%",
             marginTop: 5,
           }}
         >
           <Grow in={checked}>
             <div>
-              <Accordion>
+              <Accordion
+                expanded={expanded === "panel1"}
+                onChange={handleChange("panel1")}
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel2-content"
-                  id="panel2-header"
+                  aria-controls="panel1-content"
+                  id="panel1-header"
                 >
                   <Typography component="span">Випічка</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Typography>
-                    <FormGroup>
-                      <FormControlLabel control={<Checkbox />} label="Хліб" />
-                      <FormControlLabel control={<Checkbox />} label="Пончик" />
-                      <FormControlLabel
-                        control={<Checkbox />}
-                        label="Круассан"
-                      />
-                    </FormGroup>
-                  </Typography>
+                  <FormGroup>
+                    <FormControlLabel control={<Checkbox />} label="Хліб" />
+                    <FormControlLabel control={<Checkbox />} label="Пончик" />
+                    <FormControlLabel control={<Checkbox />} label="Круассан" />
+                  </FormGroup>
                 </AccordionDetails>
               </Accordion>
-              <Accordion>
+
+              <Accordion
+                expanded={expanded === "panel2"}
+                onChange={handleChange("panel2")}
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel2-content"
@@ -67,13 +69,11 @@ export const ProductsList = () => {
                   <Typography component="span">Молочка</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Typography>
-                    <FormGroup>
-                      <FormControlLabel control={<Checkbox />} label="Молоко" />
-                      <FormControlLabel control={<Checkbox />} label="Творог" />
-                      <FormControlLabel control={<Checkbox />} label="Сир" />
-                    </FormGroup>
-                  </Typography>
+                  <FormGroup>
+                    <FormControlLabel control={<Checkbox />} label="Молоко" />
+                    <FormControlLabel control={<Checkbox />} label="Творог" />
+                    <FormControlLabel control={<Checkbox />} label="Сир" />
+                  </FormGroup>
                 </AccordionDetails>
               </Accordion>
             </div>

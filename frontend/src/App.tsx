@@ -14,9 +14,9 @@ function App() {
   const productsRef = useRef<HTMLDivElement>(null);
 
   const [showResult, setShowResult] = useState(false);
-  const tableRef = useRef(null);
+  const tableRef = useRef<HTMLDivElement>(null);
 
-  const handleCreateBusketClick = () => {
+  const handleCreateBasketClick = () => {
     setCreateBasket(true);
   };
 
@@ -33,9 +33,9 @@ function App() {
   return (
     <>
       {/* <Header /> */}
-      <HeroSection onClick={handleCreateBusketClick} />
+      <HeroSection onClick={handleCreateBasketClick} />
 
-      <MainActions onClick={handleCreateBusketClick} />
+      <MainActions onClick={handleCreateBasketClick} />
 
       {createBasket && (
         <div ref={productsRef}>

@@ -38,34 +38,32 @@ export const CountryForm: React.FC<Props> = ({ onClick }) => {
         }}
       >
         <FormControl sx={{ minWidth: 200 }} required>
-          <InputLabel id="label1">Країна1</InputLabel>
+          <InputLabel id="label1">Country1</InputLabel>
           <Select
             labelId="label1"
             id="country1"
             value={country1}
-            label="Країна1"
+            label="Country1"
             onChange={handleChangeCountry1}
           >
-            <MenuItem value={10}>Україна</MenuItem>
-            <MenuItem value={20}>Бельгія</MenuItem>
-            <MenuItem value={30}>Франція</MenuItem>
+            <MenuItem value={10}>Ukraine</MenuItem>
+            <MenuItem value={20}>Country3</MenuItem>
+            <MenuItem value={30}>Country4</MenuItem>
           </Select>
         </FormControl>
 
         <CompareArrowsIcon />
 
         <FormControl sx={{ minWidth: 200 }} required>
-          <InputLabel id="label2">Країна2</InputLabel>
+          <InputLabel id="label2">Country2</InputLabel>
           <Select
             labelId="label2"
             id="country2"
             value={country2}
-            label="Країна2"
+            label="Country2"
             onChange={handleChangeCountry2}
           >
-            <MenuItem value={10}>Франція</MenuItem>
-            <MenuItem value={20}>Італія</MenuItem>
-            <MenuItem value={30}>Іспанія</MenuItem>
+            <MenuItem value={40}>Country5</MenuItem>
           </Select>
         </FormControl>
         <Button variant="contained" size="large" onClick={onClick}>
