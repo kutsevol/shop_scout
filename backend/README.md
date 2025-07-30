@@ -4,5 +4,5 @@
 2. Create and activate virtual environment via [this](https://docs.astral.sh/uv/pip/environments/) instruction.
 3. Install dependencies:
 ```bash
-  uv sync
+  uv sync --all-groups --all-extras
 ```
