@@ -77,7 +77,7 @@ export const HeroSection: React.FC<Props> = ({ onClick }) => {
             <Button
               variant="contained"
               size="large"
-              sx={{ mt: 3, borderRadius: 3, px: 4, py: 1 }}
+              sx={{ mt: 3, px: 4, py: 1 }}
               onClick={onClick}
             >
               Get Started

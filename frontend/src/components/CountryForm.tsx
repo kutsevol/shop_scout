@@ -11,11 +11,13 @@ import {
 import { useState } from "react";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 
-type Props = {
+type CountryFormProps = {
   onClick: () => void;
 };
 
-export const CountryForm: React.FC<Props> = ({ onClick }) => {
+const COUNTRIES = ["Ukraine", "Poland", "France", "Spain", "Germany"];
+
+export const CountryForm: React.FC<CountryFormProps> = ({ onClick }) => {
   const [country1, setCountry1] = useState("");
   const [country2, setCountry2] = useState("");
 
@@ -46,14 +48,14 @@ export const CountryForm: React.FC<Props> = ({ onClick }) => {
             label="Country1"
             onChange={handleChangeCountry1}
           >
-            <MenuItem value={10}>Ukraine</MenuItem>
-            <MenuItem value={20}>Country3</MenuItem>
-            <MenuItem value={30}>Country4</MenuItem>
+            {COUNTRIES.map((country) => (
+              <MenuItem value={country} key={country}>
+                {country}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-
         <CompareArrowsIcon />
-
         <FormControl sx={{ minWidth: 200 }} required>
           <InputLabel id="label2">Country2</InputLabel>
           <Select
@@ -63,7 +65,11 @@ export const CountryForm: React.FC<Props> = ({ onClick }) => {
             label="Country2"
             onChange={handleChangeCountry2}
           >
-            <MenuItem value={40}>Country5</MenuItem>
+            {COUNTRIES.map((country) => (
+              <MenuItem value={country} key={country}>
+                {country}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <Button variant="contained" size="large" onClick={onClick}>

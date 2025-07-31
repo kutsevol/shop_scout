@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+import { Container, Paper, Stack } from "@mui/material";
+
 import { HeroSection } from "./components/HeroSection";
 import { ProductsList } from "./components/ProductsList";
-
 import { MainActions } from "./components/MainActions/MainActions";
 import { Footer } from "./components/Footer/Footer";
 import { CountryForm } from "./components/CountryForm";
-import ResultTable from "./components/ResultTable";
+import { ResultTable } from "./components/ResultTable";
 
 function App() {
   const [createBasket, setCreateBasket] = useState(false);
@@ -39,14 +40,28 @@ function App() {
 
       {createBasket && (
         <div ref={productsRef}>
-          <ProductsList />
-          <CountryForm onClick={handleShowResultClick} />
+          <Container maxWidth="lg">
+            <Paper
+              elevation={3}
+              sx={{
+                borderRadius: 4,
+                backgroundColor: "rgba(239, 239, 239, 0.9)",
+                margin: 5,
+                padding: 5,
+              }}
+            >
+              <Stack spacing={4}>
+                <ProductsList />
+                <CountryForm onClick={handleShowResultClick} />
+              </Stack>
 
-          {showResult && (
-            <div ref={tableRef}>
-              <ResultTable />
-            </div>
-          )}
+              {showResult && (
+                <div ref={tableRef}>
+                  <ResultTable />
+                </div>
+              )}
+            </Paper>
+          </Container>
         </div>
       )}
 

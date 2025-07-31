@@ -8,7 +8,7 @@ const theme = createTheme({
   palette: {
     mode: "light", // або 'dark'
     primary: {
-      main: "#0099ffff", // новий основний колір (помаранчевий)
+      main: "#0099ffff",
     },
     info: {
       main: "#000000ff", // наприклад, бірюзовий

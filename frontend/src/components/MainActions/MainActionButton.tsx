@@ -1,38 +1,33 @@
-import type { SvgIconComponent } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Button } from "@mui/material";
+import type { ReactNode } from "react";
 
-type Props = {
-  icon: SvgIconComponent;
+type MainActionButtonProps = {
+  icon: ReactNode;
   text: string;
   onClick: () => void;
 };
 
-export const MainActionButton: React.FC<Props> = ({
-  icon: Icon,
+export const MainActionButton: React.FC<MainActionButtonProps> = ({
+  icon,
   text,
   onClick,
 }) => {
   return (
-    <Box
-      sx={{
-        width: 240,
-        height: 240,
-        borderRadius: 2,
-        bgcolor: "primary.main",
-        "&:hover": {
-          bgcolor: "primary.dark",
-        },
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer",
-        transition: "0.3s",
-      }}
-      onClick={onClick}
-    >
-      <Icon sx={{ fontSize: 32, mb: 1 }} />
-      <Typography variant="body1">{text}</Typography>
-    </Box>
+    <>
+      <Button
+        variant="outlined"
+        startIcon={icon}
+        sx={{
+          width: "200px",
+          height: "100px",
+          boxShadow: 3,
+          border: "none",
+          color: "info.main",
+        }}
+        onClick={onClick}
+      >
+        {text}
+      </Button>
+    </>
   );
 };
