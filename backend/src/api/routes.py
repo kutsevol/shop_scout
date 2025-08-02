@@ -5,11 +5,14 @@ import json
 import pathlib
 from models.models import Store
 
+
 app = FastAPI()
 router = APIRouter()
 
 
-stores_json = json.loads(pathlib.Path("../data/stores.json").read_text())
+base_dir = pathlib.Path(__file__).resolve().parent.parent.parent
+stores_path = base_dir / "data" / "stores.json"
+stores_json = json.loads(stores_path.read_text())
 stores = []
 for store in stores_json:
     stores.append(Store(**store))
