@@ -24,7 +24,7 @@ async def read_index() -> dict:
 
 
 @router.get("/stores/", tags=["stores"])
-async def read_stores():
+async def read_stores() -> list[Store]:
     return stores
 
 
