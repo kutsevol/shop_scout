@@ -9,7 +9,7 @@ app = FastAPI()
 router = APIRouter()
 
 
-stores_json = json.loads(pathlib.Path("./data/stores.json").read_text())
+stores_json = json.loads(pathlib.Path("../data/stores.json").read_text())
 stores = []
 for store in stores_json:
     stores.append(Store(**store))
