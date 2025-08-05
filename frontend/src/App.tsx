@@ -1,33 +1,71 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+import { Container, Paper, Stack } from "@mui/material";
+
+import { HeroSection } from "./components/HeroSection";
+import { ProductsList } from "./components/ProductsList";
+import { MainActions } from "./components/MainActions/MainActions";
+import { Footer } from "./components/Footer/Footer";
+import { CountryForm } from "./components/CountryForm";
+import { ResultTable } from "./components/ResultTable";
+
 function App() {
-  const [count, setCount] = useState(0);
+  const [createBasket, setCreateBasket] = useState(false);
+  const productsRef = useRef<HTMLDivElement>(null);
+
+  const [showResult, setShowResult] = useState(false);
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  const handleCreateBasketClick = () => {
+    setCreateBasket(true);
+  };
+
+  const handleShowResultClick = () => {
+    setShowResult(true);
+  };
+
+  useEffect(() => {
+    if (createBasket && productsRef.current) {
+      productsRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [createBasket]);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {/* <Header /> */}
+      <HeroSection onClick={handleCreateBasketClick} />
+
+      <MainActions onClick={handleCreateBasketClick} />
+
+      {createBasket && (
+        <div ref={productsRef}>
+          <Container maxWidth="lg">
+            <Paper
+              elevation={3}
+              sx={{
+                borderRadius: 4,
+                backgroundColor: "rgba(239, 239, 239, 0.9)",
+                margin: 5,
+                padding: 5,
+              }}
+            >
+              <Stack spacing={4}>
+                <ProductsList />
+                <CountryForm onClick={handleShowResultClick} />
+              </Stack>
+
+              {showResult && (
+                <div ref={tableRef}>
+                  <ResultTable />
+                </div>
+              )}
+            </Paper>
+          </Container>
+        </div>
+      )}
+
+      <Footer />
     </>
   );
 }
