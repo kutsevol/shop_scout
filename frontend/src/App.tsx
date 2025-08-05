@@ -7,8 +7,9 @@ import { HeroSection } from "./components/HeroSection";
 import { ProductsList } from "./components/ProductsList";
 import { MainActions } from "./components/MainActions/MainActions";
 import { Footer } from "./components/Footer/Footer";
-import { CountryForm } from "./components/CountryForm";
+
 import { ResultTable } from "./components/ResultTable";
+import { AboutApp } from "./components/AboutApp/AboutAppList";
 
 function App() {
   const [createBasket, setCreateBasket] = useState(false);
@@ -36,34 +37,33 @@ function App() {
       {/* <Header /> */}
       <HeroSection onClick={handleCreateBasketClick} />
 
-      <MainActions onClick={handleCreateBasketClick} />
+      <AboutApp />
 
-      {createBasket && (
-        <div ref={productsRef}>
-          <Container maxWidth="lg">
-            <Paper
-              elevation={3}
-              sx={{
-                borderRadius: 4,
-                backgroundColor: "rgba(239, 239, 239, 0.9)",
-                margin: 5,
-                padding: 5,
-              }}
-            >
-              <Stack spacing={4}>
-                <ProductsList />
-                <CountryForm onClick={handleShowResultClick} />
-              </Stack>
+      {/* <MainActions onClick={handleCreateBasketClick} /> */}
 
-              {showResult && (
-                <div ref={tableRef}>
-                  <ResultTable />
-                </div>
-              )}
-            </Paper>
-          </Container>
-        </div>
-      )}
+      <div ref={productsRef}>
+        <Container maxWidth="lg">
+          <Paper
+            elevation={3}
+            sx={{
+              borderRadius: 4,
+              backgroundColor: "rgba(239, 239, 239, 0.9)",
+              margin: 5,
+              padding: 5,
+            }}
+          >
+            <Stack spacing={4}>
+              <ProductsList />
+            </Stack>
+
+            {showResult && (
+              <div ref={tableRef}>
+                <ResultTable />
+              </div>
+            )}
+          </Paper>
+        </Container>
+      </div>
 
       <Footer />
     </>
