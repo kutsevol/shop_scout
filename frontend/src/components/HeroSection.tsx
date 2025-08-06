@@ -1,13 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import { Header } from "./Header/Header";
 
 import { MainForm } from "./MainForm";
 
-type Props = {
-  onClick: () => void;
-};
-
-export const HeroSection: React.FC<Props> = ({ onClick }) => {
+export const HeroSection = () => {
   return (
     <Box
       sx={{
@@ -43,8 +38,6 @@ export const HeroSection: React.FC<Props> = ({ onClick }) => {
           flexDirection: "column",
         }}
       >
-        <Header />
-
         <Box
           sx={{
             flex: 1,
@@ -62,7 +55,7 @@ export const HeroSection: React.FC<Props> = ({ onClick }) => {
             color="primary.contrastText"
             fontWeight={900}
           >
-            Select a basket and see country prices
+            Choose countries to compare product prices
           </Typography>
           <MainForm />
         </Box>

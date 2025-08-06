@@ -7,7 +7,7 @@ type AboutAppItemProps = {
   text: string;
 };
 
-export const AboutAppItem: React.FC<AboutAppItemProps> = ({
+export const ShortInfoItem: React.FC<AboutAppItemProps> = ({
   icon,
   title,
   text,
@@ -18,7 +18,7 @@ export const AboutAppItem: React.FC<AboutAppItemProps> = ({
         display: "flex",
         width: 300,
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "flex-start",
         gap: 3,
       }}
     >
@@ -29,7 +29,7 @@ export const AboutAppItem: React.FC<AboutAppItemProps> = ({
           py: { xs: 2, sm: 3 },
           display: "flex",
           flexWrap: "wrap",
-          justifyContent: "center",
+          alignSelf: "center",
           borderRadius: 10,
           backgroundColor: "primary.50",
           backdropFilter: "blur(8px)",
@@ -37,7 +37,12 @@ export const AboutAppItem: React.FC<AboutAppItemProps> = ({
       >
         {icon}
       </Paper>
-      <Box>
+      <Box
+        sx={{
+          justifyContent: "start",
+          alignItems: "start",
+        }}
+      >
         <Typography
           variant="h3"
           component="h6"

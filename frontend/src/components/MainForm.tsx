@@ -1,18 +1,32 @@
-import { Button, Paper } from "@mui/material";
-import { useState } from "react";
+import { Button, Paper, Box } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import { CustomSelect } from "./CustomSelect";
-
-const COUNTRIES = ["Ukraine", "Poland", "France", "Spain", "Germany"];
+import { CountriesSelect } from "./CountriesSelect";
+import { CustomButtonGroup } from "./CustomButtonGroup";
+import { getCountries } from "../services/countries";
+import type { Country } from "../types/country";
 
 export const MainForm = () => {
   const [country1, setCountry1] = useState("");
   const [country2, setCountry2] = useState("");
-  const [basketType, setBasketType] = useState("Default basket");
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleBasketTypeChange = (value: string) => {
-    setBasketType(value);
-  };
+  useEffect(() => {
+    getCountries()
+      .then((countries) => {
+        setCountries(
+          countries.sort((country1, country2) =>
+            country1.name.localeCompare(country2.name)
+          )
+        );
+      })
+      .catch(() => {
+        setErrorMessage("Error whith fatching Countries data");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleChangeCountry1 = (value: string) => {
     setCountry1(value);
@@ -25,11 +39,12 @@ export const MainForm = () => {
     <Paper
       elevation={6}
       sx={{
-        px: { xs: 3, sm: 6 },
-        py: { xs: 4, sm: 6 },
+        px: { xs: 3, sm: 3 },
+        py: { xs: 3, sm: 3 },
         display: "flex",
+        flexDirection: "column",
         flexWrap: "wrap",
-        justifyContent: "center",
+        justifyContent: "left",
         gap: 2,
         borderRadius: 4,
         backgroundColor: "primary.800",
@@ -39,41 +54,48 @@ export const MainForm = () => {
         boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
       }}
     >
-      {/* <CustomSelect
-        value={basketType}
-        helperText="Select basket"
-        data={["Default basket", "Create basket"]}
-        onChange={(value) => handleBasketTypeChange(value)}
-      /> */}
+      <Box>
+        <CustomButtonGroup />
+      </Box>
 
-      <CustomSelect
-        value={country1}
-        helperText="Select country 1"
-        data={COUNTRIES}
-        onChange={(value) => handleChangeCountry1(value)}
-      />
-
-      <CustomSelect
-        value={country2}
-        helperText="Select country 2"
-        data={COUNTRIES}
-        onChange={(value) => handleChangeCountry2(value)}
-      />
-
-      <Button
-        variant="contained"
-        size="large"
-        color="secondary"
+      <Box
         sx={{
-          height: "56px",
-          alignSelf: "flex-end",
-          minWidth: 200,
-          flexGrow: 1,
-          color: "primary.contrastText",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          gap: 2,
+
+          textAlign: "left",
         }}
       >
-        Compare prices
-      </Button>
+        <CountriesSelect
+          value={country1}
+          helperText="Select country 1"
+          countries={countries}
+          onChange={(value) => handleChangeCountry1(value)}
+        />
+
+        <CountriesSelect
+          value={country2}
+          helperText="Select country 2"
+          countries={countries}
+          onChange={(value) => handleChangeCountry2(value)}
+        />
+
+        <Button
+          variant="contained"
+          size="large"
+          color="secondary"
+          sx={{
+            height: "56px",
+            alignSelf: "flex-start",
+            flexGrow: 1,
+            color: "primary.contrastText",
+          }}
+        >
+          Compare
+        </Button>
+      </Box>
     </Paper>
   );
 };
