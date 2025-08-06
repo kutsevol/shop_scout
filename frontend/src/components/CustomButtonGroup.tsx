@@ -1,9 +1,17 @@
-import { useState } from "react";
 import { Box, Button } from "@mui/material";
+import type { ButtonGroup } from "../types/buttons";
 
-export const CustomButtonGroup = () => {
-  const [active, setActive] = useState<"two" | "multiple">("two");
+type CustomButtonGroupProps = {
+  active: ButtonGroup;
+  buttons: ButtonGroup[];
+  onClick?: (value: string) => void;
+};
 
+export const CustomButtonGroup: React.FC<CustomButtonGroupProps> = ({
+  active,
+  buttons,
+  onClick = () => {},
+}) => {
   return (
     <Box
       sx={{
@@ -13,26 +21,19 @@ export const CustomButtonGroup = () => {
         overflow: "hidden",
       }}
     >
-      <Button
-        sx={{
-          backgroundColor: active === "two" ? "#ffffff" : "primary.900",
-          height: active === "two" ? 26 : 25,
-          color: active === "two" ? "#000" : "primary.contrastText",
-        }}
-        onClick={() => setActive("two")}
-      >
-        Two Countries
-      </Button>
-      <Button
-        sx={{
-          backgroundColor: active === "multiple" ? "#ffffff" : "primary.900",
-          height: active === "multiple" ? 26 : 25,
-          color: active === "multiple" ? "#000" : "primary.contrastText",
-        }}
-        onClick={() => setActive("multiple")}
-      >
-        Multiple Countries
-      </Button>
+      {buttons.map((button) => (
+        <Button
+          key={button.value}
+          sx={{
+            backgroundColor: active === button ? "#ffffff" : "primary.900",
+            height: active === button ? 26 : 25,
+            color: active === button ? "#000" : "primary.contrastText",
+          }}
+          onClick={() => onClick(button.value)}
+        >
+          {button.text}
+        </Button>
+      ))}
     </Box>
   );
 };
