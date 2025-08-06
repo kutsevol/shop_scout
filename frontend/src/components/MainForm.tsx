@@ -5,24 +5,11 @@ import { CountriesSelect } from "./CountriesSelect";
 import { CustomButtonGroup } from "./CustomButtonGroup";
 import { getCountries } from "../services/countries";
 import type { Country } from "../types/country";
-import type { ButtonGroup } from "../types/buttons";
-
-const BUTTON_GROP: ButtonGroup[] = [
-  {
-    text: "Tow Countries",
-    value: "two",
-  },
-  {
-    text: "Multiple Countries",
-    value: "multiple",
-  },
-];
 
 export const MainForm = () => {
   const [country1, setCountry1] = useState("");
   const [country2, setCountry2] = useState("");
   const [countries, setCountries] = useState<Country[]>([]);
-  const [activeButton, setActiveButton] = useState(BUTTON_GROP[0]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -37,7 +24,7 @@ export const MainForm = () => {
         );
       })
       .catch(() => {
-        setErrorMessage("Error with fetching Countries data");
+        setErrorMessage("Error whith fetching Countries data");
       })
       .finally(() => setLoading(false));
   }, []);
@@ -49,12 +36,6 @@ export const MainForm = () => {
   const handleChangeCountry2 = (value: string) => {
     setCountry2(value);
   };
-
-  const handleButtonClick = (value: string) => {
-    const found = BUTTON_GROP.find((button) => button.value === value);
-    setActiveButton(found ?? BUTTON_GROP[0]);
-  };
-
   return (
     <Paper
       elevation={6}
@@ -75,11 +56,7 @@ export const MainForm = () => {
       }}
     >
       <Box>
-        <CustomButtonGroup
-          active={activeButton}
-          buttons={BUTTON_GROP}
-          onClick={handleButtonClick}
-        />
+        <CustomButtonGroup />
       </Box>
 
       <Box
@@ -94,13 +71,13 @@ export const MainForm = () => {
       >
         {!errorMessage ? (
           <>
-            {" "}
             <CountriesSelect
               value={country1}
               helperText="Select country 1"
               countries={countries}
               onChange={(value) => handleChangeCountry1(value)}
             />
+
             <CountriesSelect
               value={country2}
               helperText="Select country 2"

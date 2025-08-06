@@ -7,6 +7,5 @@ export async function getData<T>(url: string): Promise<T> {
     const errorText = await response.text();
     throw new Error(`${response.status} ${errorText}`);
   }
-
   return response.json();
 }

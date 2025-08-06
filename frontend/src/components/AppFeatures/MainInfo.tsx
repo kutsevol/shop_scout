@@ -36,8 +36,10 @@ export const MainInfo = () => {
       <Typography component="p">
         📊 Make data-driven choices before making a big move.
       </Typography>{" "}
-      <Typography component="p"></Typography>🚀 Save time, money, and surprises
-      when planning your next chapter abroad.
+      <Typography component="p">
+        🚀 Save time, money, and surprises when planning your next chapter
+        abroad.
+      </Typography>
       <Button
         variant="contained"
         size="large"
