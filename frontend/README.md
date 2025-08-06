@@ -16,5 +16,3 @@
 - Material UI v5
 - Vite or Create React App (depending on your setup)
 - SCSS or Styled Components (optional)
-
-## 📂 Project Structure
