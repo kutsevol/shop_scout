@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 
 import { MainForm } from "./MainForm";
 
-export const HeroSection = () => {
+export const BannerWithForm = () => {
   return (
     <Box
       sx={{

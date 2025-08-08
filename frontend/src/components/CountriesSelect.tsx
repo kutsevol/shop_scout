@@ -1,30 +1,47 @@
-import { FormControl, Select, MenuItem, FormHelperText } from "@mui/material";
+import {
+  FormControl,
+  Select,
+  MenuItem,
+  FormHelperText,
+  type SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import type { Country } from "../types/country";
+import { useState } from "react";
 
-type CustomSelectProps = {
+type CountriesSelectProps = {
   value: string;
   helperText: string;
   countries: Country[];
-  onChange?: (value: string) => void;
+  onCountryChange?: (value: string) => void;
 };
 
-export const CountriesSelect: React.FC<CustomSelectProps> = ({
+export const CountriesSelect = ({
   value,
   helperText,
   countries,
-  onChange = () => {},
-}) => {
+  onCountryChange = () => {},
+}: CountriesSelectProps) => {
+  const [valueSelect, setValueSelect] = useState(value);
+
+  const handleCountryChange = (event: SelectChangeEvent) => {
+    setValueSelect(event.target.value);
+    onCountryChange(event.target.value);
+  };
+
   return (
     <FormControl sx={{ minWidth: 400, flexGrow: 1 }}>
       <Select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+        value={valueSelect}
+        onChange={handleCountryChange}
         displayEmpty
         inputProps={{ "aria-label": "Without label" }}
       >
         {countries.map((country) => (
           <MenuItem value={country.name} key={country.name}>
-            <span style={{ marginRight: 8 }}>{country?.emoji}</span>
+            <Typography component="span" sx={{ marginRight: 1 }}>
+              {country?.emoji}
+            </Typography>
             {country.name}
           </MenuItem>
         ))}

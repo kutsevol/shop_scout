@@ -1,4 +1,10 @@
-import { Button, Paper, Box, Typography } from "@mui/material";
+import {
+  Button,
+  Paper,
+  Box,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { CountriesSelect } from "./CountriesSelect";
@@ -23,8 +29,8 @@ export const MainForm = () => {
           )
         );
       })
-      .catch(() => {
-        setErrorMessage("Error whith fetching Countries data");
+      .catch((err) => {
+        setErrorMessage(err.message);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -69,41 +75,42 @@ export const MainForm = () => {
           textAlign: "left",
         }}
       >
-        {!errorMessage ? (
+        {loading && !errorMessage && <CircularProgress />}
+
+        {!errorMessage && !loading ? (
           <>
             <CountriesSelect
               value={country1}
               helperText="Select country 1"
               countries={countries}
-              onChange={(value) => handleChangeCountry1(value)}
+              onCountryChange={(value) => handleChangeCountry1(value)}
             />
 
             <CountriesSelect
               value={country2}
               helperText="Select country 2"
               countries={countries}
-              onChange={(value) => handleChangeCountry2(value)}
+              onCountryChange={(value) => handleChangeCountry2(value)}
             />
+            <Button
+              variant="contained"
+              size="large"
+              color="secondary"
+              sx={{
+                height: "56px",
+                alignSelf: "flex-start",
+                flexGrow: 1,
+                color: "primary.contrastText",
+              }}
+            >
+              Compare
+            </Button>
           </>
         ) : (
           <Typography component="p" color="error">
             {errorMessage}
           </Typography>
         )}
-
-        <Button
-          variant="contained"
-          size="large"
-          color="secondary"
-          sx={{
-            height: "56px",
-            alignSelf: "flex-start",
-            flexGrow: 1,
-            color: "primary.contrastText",
-          }}
-        >
-          Compare
-        </Button>
       </Box>
     </Paper>
   );

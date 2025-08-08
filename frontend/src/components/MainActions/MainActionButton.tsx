@@ -7,11 +7,11 @@ type MainActionButtonProps = {
   onClick: () => void;
 };
 
-export const MainActionButton: React.FC<MainActionButtonProps> = ({
+export const MainActionButton = ({
   icon,
   text,
   onClick,
-}) => {
+}: MainActionButtonProps) => {
   return (
     <>
       <Button

@@ -1,10 +1,10 @@
 import { AppFeatures } from "../components/AppFeatures/AppFeatures";
-import { HeroSection } from "../components/HeroSection";
+import { BannerWithForm } from "../components/BannerWithForm";
 
 export const HomePage = () => {
   return (
     <>
-      <HeroSection />
+      <BannerWithForm />
       <AppFeatures />
     </>
   );

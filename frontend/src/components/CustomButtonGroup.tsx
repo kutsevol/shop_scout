@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Button } from "@mui/material";
 
 export const CustomButtonGroup = () => {
-  const [active, setActive] = useState<"two" | "multiple">("two");
+  const [isMultiple, setIsMultiple] = useState(false);
 
   return (
     <Box
@@ -15,21 +15,21 @@ export const CustomButtonGroup = () => {
     >
       <Button
         sx={{
-          backgroundColor: active === "two" ? "#ffffff" : "primary.900",
-          height: active === "two" ? 26 : 25,
-          color: active === "two" ? "#000" : "primary.contrastText",
+          backgroundColor: isMultiple ? "primary.900" : "#ffffff",
+          height: isMultiple ? 25 : 26,
+          color: isMultiple ? "primary.contrastText" : "#000",
         }}
-        onClick={() => setActive("two")}
+        onClick={() => setIsMultiple(false)}
       >
         Two Countries
       </Button>
       <Button
         sx={{
-          backgroundColor: active === "multiple" ? "#ffffff" : "primary.900",
-          height: active === "multiple" ? 26 : 25,
-          color: active === "multiple" ? "#000" : "primary.contrastText",
+          backgroundColor: isMultiple ? "#ffffff" : "primary.900",
+          height: isMultiple ? 26 : 25,
+          color: isMultiple ? "#000" : "primary.contrastText",
         }}
-        onClick={() => setActive("multiple")}
+        onClick={() => setIsMultiple(true)}
       >
         Multiple Countries
       </Button>

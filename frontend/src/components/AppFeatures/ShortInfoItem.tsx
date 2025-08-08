@@ -7,11 +7,7 @@ type AboutAppItemProps = {
   text: string;
 };
 
-export const ShortInfoItem: React.FC<AboutAppItemProps> = ({
-  icon,
-  title,
-  text,
-}) => {
+export const ShortInfoItem = ({ icon, title, text }: AboutAppItemProps) => {
   return (
     <Box
       sx={{
