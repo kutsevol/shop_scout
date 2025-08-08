@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
+from dto.country import Country
 from dto.shop import Shop
-from static import shops
+from static import countries, shops
 
 router = APIRouter()
 
@@ -14,6 +15,11 @@ async def read_index() -> dict:
 @router.get("/shops/", tags=["shops"])
 async def read_shops() -> list[Shop]:
     return shops
+
+
+@router.get("/countries/", tags=["countries"])
+async def get_countries() -> list[Country]:
+    return countries
 
 
 @router.get("/shop/{shop_id}/", tags=["shop"])
