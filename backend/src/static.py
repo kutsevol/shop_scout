@@ -2,6 +2,8 @@ from typing import List
 
 import httpx
 
+from dto.country import Country
+
 BASE_URL = "https://stores-api.zakaz.ua"
 HEADERS = {"User-Agent": "price-checker/0.1 (+github.com/you)", "Accept": "application/json"}
 
@@ -57,3 +59,38 @@ async def async_search_products(store_id: str, query: str) -> List[dict]:
 
 # shops = asyncio.run(main1())
 # 482010105
+
+countries = [
+    Country(
+        id=1,
+        name="Ukraine",
+        code="UA",
+        emoji="🇺🇦",
+        unicode="U+1F1FA U+1F1E6",
+        image="https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/images/UA.svg",
+    ),
+    Country(
+        id=2,
+        name="France",
+        code="FR",
+        emoji="🇫🇷",
+        unicode="U+1F1EB U+1F1F7",
+        image="https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/images/FR.svg",
+    ),
+    Country(
+        id=3,
+        name="Spain",
+        code="ES",
+        emoji="🇪🇸",
+        unicode="U+1F1EA U+1F1F8",
+        image="https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/images/ES.svg",
+    ),
+    Country(
+        id=4,
+        name="Germany",
+        code="DE",
+        emoji="🇩🇪",
+        unicode="U+1F1E9 U+1F1EA",
+        image="https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/images/DE.svg",
+    ),
+]
