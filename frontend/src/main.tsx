@@ -1,33 +1,29 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 import "./index.css";
 import App from "./App.tsx";
-
-const theme = createTheme({
-  palette: {
-    mode: "light", // або 'dark'
-    primary: {
-      main: "#0099ffff",
-    },
-    info: {
-      main: "#000000ff", // наприклад, бірюзовий
-    },
-  },
-  typography: {
-    fontFamily: `"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif`,
-    button: {
-      textTransform: "none", // прибирає uppercase з кнопок
-      fontWeight: 500,
-    },
-  },
-});
+import { theme } from "./styles/theme.ts";
+import { HomePage } from "./pages/HomePage.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </StrictMode>
+  <Router>
+    <StrictMode>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route path="home" element={<Navigate to="/" />} />
+            <Route index element={<HomePage />} />
+          </Route>
+        </Routes>
+      </ThemeProvider>
+    </StrictMode>
+  </Router>
 );

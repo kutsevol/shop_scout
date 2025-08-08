@@ -9,7 +9,7 @@ type MainActionsProps = {
   onClick: () => void;
 };
 
-export const MainActions: React.FC<MainActionsProps> = ({ onClick }) => {
+export const MainActions = ({ onClick }: MainActionsProps) => {
   return (
     <Box
       sx={{
