@@ -25,7 +25,7 @@ async def get_countries() -> list[Country]:
 
 
 @router.get("/shop/{shop_id}/", tags=["shop"])
-async def read_shop(shop_id: int) -> Shop | str:
+async def get_shop(shop_id: int) -> Shop | str:
     stores = await async_fetch_stores()
     shops = [Shop(**store) for store in stores]
     for shop in shops:
@@ -35,6 +35,6 @@ async def read_shop(shop_id: int) -> Shop | str:
 
 
 @router.get("/shop/{shop_id}/{product}/", tags=["products"])
-async def read_shop2(shop_id: str, product: str) -> list[dict]:
+async def get_product_from_shop(shop_id: str, product: str) -> list[dict]:
     products = await async_search_products(store_id=shop_id, query=product)
     return products
