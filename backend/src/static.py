@@ -40,26 +40,6 @@ async def async_search_products(store_id: str, query: str) -> List[dict]:
             return []
 
 
-# async def main1():
-#     stores = await async_fetch_stores()
-#     shops = [Shop(**store) for store in stores]
-#     print(shops)
-#     return shops
-
-# print(shops)
-# for shop in shops:
-#     print(shop)
-# store_ids = [stores[i]["id"] for i in range(len(stores))]
-# store_names = [stores[i]["name"] for i in range(len(stores))]
-# print(f"Отримано {len(stores)} магазинів")
-# print(stores[0])
-# async with httpx.AsyncClient() as client:
-#     bread = await async_search_products(client=client, store_id=store_ids[0], query="potato")
-# print(bread)
-
-# shops = asyncio.run(main1())
-# 482010105
-
 countries = [
     Country(
         id=1,

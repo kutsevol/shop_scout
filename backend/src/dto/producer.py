@@ -4,8 +4,8 @@ from dto.logo import Logo
 
 
 class Producer(BaseModel):
-    trademark: str  # "Квас Тарас"
-    trademark_slug: str  # "kvas-taras"
-    website: str  # "https://carlsbergukraine.com"
-    logo: Logo
-    name: str  # "\"carlsberg ukraine\" pjsc"
+    trademark: str | None = None  # "Квас Тарас"
+    trademark_slug: str | None = None  # "kvas-taras"
+    website: str | None = None  # "https://carlsbergukraine.com"
+    logo: Logo | None = None
+    name: str | None = None  # "\"carlsberg ukraine\" pjsc"

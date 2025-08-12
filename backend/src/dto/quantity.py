@@ -2,6 +2,6 @@ from pydantic import BaseModel
 
 
 class Quantity(BaseModel):
-    min: int  # 1
-    step: int  # 1
-    is_strict: bool  # false
+    min: int | None = None  # 1
+    step: int | None = None  # 1
+    is_strict: bool | None = None  # false

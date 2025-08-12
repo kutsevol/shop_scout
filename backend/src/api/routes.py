@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from dto.country import Country
+from dto.product import Product
 from dto.shop import Shop
 from static import async_fetch_stores, async_search_products, countries
 
@@ -13,7 +14,7 @@ async def read_index() -> dict:
 
 
 @router.get("/shops/", tags=["shops"])
-async def read_shops() -> list[Shop]:
+async def get_shops() -> list[Shop]:
     stores = await async_fetch_stores()
     shops = [Shop(**store) for store in stores]
     return shops
@@ -34,7 +35,8 @@ async def get_shop(shop_id: int) -> Shop | str:
     raise HTTPException(status_code=404, detail="Not Found")
 
 
-@router.get("/shop/{shop_id}/{product}/", tags=["products"])
-async def get_product_from_shop(shop_id: str, product: str) -> list[dict]:
-    products = await async_search_products(store_id=shop_id, query=product)
+@router.get("/shop/{shop_id}/search/{product}/", tags=["search_products"])
+async def get_product_from_shop(shop_id: str, product: str) -> list[Product]:
+    results = await async_search_products(store_id=shop_id, query=product)
+    products = [Product(**product) for product in results]
     return products
