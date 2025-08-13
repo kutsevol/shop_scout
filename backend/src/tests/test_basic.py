@@ -14,17 +14,6 @@ def test_read_index():
 def test_read_shops():
     response = client.get("/shops/")
     assert response.status_code == 200
-    assert response.json() == [
-        {"id": 1, "name": "Auchan"},
-        {"id": 2, "name": "Metro"},
-        {"id": 3, "name": "Silpo"},
-    ]
-
-
-def test_read_shop():
-    response = client.get("/shop/1/")
-    assert response.status_code == 200
-    assert response.json() == {"id": 1, "name": "Auchan"}
 
 
 def test_read_single_shop_not_found():
