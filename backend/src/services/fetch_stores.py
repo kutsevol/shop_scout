@@ -1,11 +1,11 @@
 import httpx
 
-# from config import Settings
+from core.config import Settings
 
-# settings = Settings()
+settings = Settings()
 
-BASE_URL = "https://stores-api.zakaz.ua"
-USER_AGENT = "price-checker/0.1 (+github.com/you)"
+BASE_URL = settings.zakaz_api_base_url
+USER_AGENT = settings.user_agent
 HEADERS = {"User-Agent": USER_AGENT, "Accept": "application/json"}
 
 
