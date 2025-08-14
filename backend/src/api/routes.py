@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from dto.country import Country
+from dto.product import Product
 from dto.shop import Shop
-from static import countries, shops
+from services.fetch_stores import async_fetch_stores
+from services.search_products import async_search_products
+from static import countries
 
 router = APIRouter()
 
@@ -13,7 +16,9 @@ async def read_index() -> dict:
 
 
 @router.get("/shops/", tags=["shops"])
-async def read_shops() -> list[Shop]:
+async def get_shops() -> list[Shop]:
+    stores = await async_fetch_stores()
+    shops = [Shop(**store) for store in stores]
     return shops
 
 
@@ -22,9 +27,20 @@ async def get_countries() -> list[Country]:
     return countries
 
 
-@router.get("/shop/{shop_id}/", tags=["shop"])
-async def read_shop(shop_id: int) -> Shop | str:
+@router.get("/shops/{shop_id}/", tags=["shop"])
+async def get_shop(shop_id: int) -> Shop | str:
+    stores = await async_fetch_stores()
+    shops = [Shop(**store) for store in stores]
     for shop in shops:
         if shop.id == shop_id:
             return shop
     raise HTTPException(status_code=404, detail="Not Found")
+
+
+@router.get("/shops/{shop_id}/search/", tags=["search_products"])
+async def get_product_from_shop(
+    shop_id: str, product: str = Query(..., description="Product name to search for")
+) -> list[Product]:
+    results = await async_search_products(store_id=shop_id, query=product)
+    products = [Product(**product) for product in results]
+    return products
