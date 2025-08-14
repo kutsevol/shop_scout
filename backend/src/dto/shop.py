@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 
 class Shop(BaseModel):
-    id: int
+    id: str
     name: str
