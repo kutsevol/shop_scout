@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -6,6 +6,4 @@ class Settings(BaseSettings):
     zakaz_api_base_url: str = "https://stores-api.zakaz.ua"
     user_agent: str = "price-checker/0.1 (+github.com/you)"
 
-    class Config:
-        env_file = "../.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_file="../.env", env_file_encoding="utf-8")
