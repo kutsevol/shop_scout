@@ -51,7 +51,7 @@ MOCKED_RESPONSE = [{"id": "1", "name": "Shop One"}, {"id": "2", "name": "Shop Tw
 
 
 @pytest.mark.asyncio
-async def test_get_shop_success(async_client):
+async def test_get_shops_success(async_client):
     with patch("api.routes.async_fetch_stores", new=AsyncMock(return_value=MOCKED_RESPONSE)):
         response = await async_client.get("/shops/")
         assert response.status_code == 200

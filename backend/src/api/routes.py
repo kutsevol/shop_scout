@@ -28,7 +28,7 @@ async def get_countries() -> list[Country]:
 
 
 @router.get("/shops/{shop_id}/", tags=["shop"])
-async def get_shop(shop_id: int) -> Shop | str:
+async def get_shop(shop_id: str) -> Shop | str:
     stores = await async_fetch_stores()
     shops = [Shop(**store) for store in stores]
     for shop in shops:

@@ -1,3 +1,5 @@
+import logging
+
 import httpx
 
 from core.config import Settings
@@ -23,9 +25,6 @@ async def async_search_products(store_id: str, query: str) -> list[dict]:
             for product in results:
                 product["store_id"] = store_id
             return results
-        except httpx.RequestError as e:
-            print(f"Request error for store {store_id}: {e}")
-            return []
-        except httpx.HTTPStatusError as e:
-            print(f"HTTP error for store {store_id}: {e}")
-            return []
+        except (httpx.RequestError, httpx.HTTPStatusError) as e:
+            logging.error(f"Failed to search products in store {store_id} for query '{query}': {e}")
+            raise
