@@ -2,9 +2,7 @@ import logging
 
 import httpx
 
-from core.config import AppSettings
-
-settings = AppSettings()
+from core.config import settings
 
 BASE_URL = settings.zakaz_api_base_url
 HEADERS = {"Accept": "application/json"}
