@@ -17,7 +17,7 @@ install: ## Install backend dependencies
 # Development
 dev: ## Start backend development server
 	@echo "Starting backend development server..."
-	VIRTUAL_ENV= uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+	VIRTUAL_ENV= uv run python src/main.py
 
 # Testing
 test: ## Run backend tests
