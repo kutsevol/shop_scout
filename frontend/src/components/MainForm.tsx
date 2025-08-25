@@ -71,7 +71,6 @@ export const MainForm = () => {
           flexWrap: "wrap",
           justifyContent: "space-between",
           gap: 2,
-
           textAlign: "left",
         }}
       >
