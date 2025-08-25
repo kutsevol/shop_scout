@@ -27,7 +27,11 @@ function request<T>(
     .then(() => fetch(BASE_URL + url, options))
     .then(async (response) => {
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorBody = await response.json().catch(() => null);
+        const errorMessage = errorBody?.detail || response.statusText;
+        throw new Error(
+          `HTTP error! status: ${response.status} - ${errorMessage}`
+        );
       }
 
       return response.json();
