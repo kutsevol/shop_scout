@@ -1,0 +1,59 @@
+name: Deploy shop_scout
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-shop-scout
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    environment: production
+    env:
+      SHOP_SCOUT_URL: ${{ vars.SHOP_SCOUT_URL }}
+
+    steps:
+      - name: Log deployment info
+        run: |
+          echo "🚀 Starting deployment..."
+          echo "SHA: ${{ github.sha }}"
+          echo "PR: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}"
+          echo "Author: ${{ github.event.pull_request.user.login }}"
+
+      - name: Deploy to production
+        run: |
+          echo "📦 Deploying to production server..."
+          ssh vps 'bash /home/deploy/apps/shop_scout/deploy.sh'
+
+      - name: Verify via Caddy (public URL)
+        run: |
+          echo "🔍 Verifying deployment through Caddy..."
+          curl --fail --silent --show-error \
+               --retry 10 --retry-all-errors --max-time 5 \
+               "$SHOP_SCOUT_URL/"
+          echo "✅ Health check passed (Caddy/public)"
+
+      - name: Verify on server (localhost:9003)
+        run: |
+          ssh vps 'curl --fail --silent --show-error http://127.0.0.1:9003/'
+          echo "✅ Health check passed (localhost:9003)"
+
+      - name: Deployment success
+        if: success()
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "🎉 Shop Scout is now running the latest version"
+
+      - name: Deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Please check the logs and server status"
