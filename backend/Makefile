@@ -54,7 +54,7 @@ build: ## Build backend (install production dependencies)
 # Docker
 docker-build: ## Build backend Docker container
 	@echo "Building backend Docker container..."
-	docker-compose -f ../docker-compose.yaml build
+	docker-compose -f docker-compose.dev.yaml build
 
 docker-up: ## Start backend Docker container
 	@echo "Starting backend Docker container..."
