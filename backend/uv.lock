@@ -846,7 +846,7 @@ wheels = [
 
 [[package]]
 name = "shop-scout"
-version = "0.0.7"
+version = "0.0.11"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
