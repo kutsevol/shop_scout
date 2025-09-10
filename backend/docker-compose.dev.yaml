@@ -1,11 +1,13 @@
+version: "3.9"
+
 services:
   backend:
-    image: shop-scout-backend:dev
     build:
       context: .
       dockerfile: Dockerfile
+    image: shop-scout-backend:dev
     container_name: shop-scout-backend
-    command: uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    command: ["--host", "0.0.0.0", "--port", "8000", "--reload"]
     volumes:
       - ./src:/scout_backend/src
     ports:
@@ -17,7 +19,7 @@ services:
       - ../.env
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:8000/" ]
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/"]
       interval: 30s
       timeout: 3s
       retries: 3
