@@ -21,14 +21,14 @@ def app() -> FastAPI:
 @pytest.fixture
 def async_client(app: FastAPI):
     transport = ASGITransport(app=app)
-    return AsyncClient(transport=transport, base_url="http://test")
+    return AsyncClient(transport=transport, base_url="http://test", timeout=30.0)
 
 
 @pytest.mark.asyncio
 async def test_read_index(async_client):
     response = await async_client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"Hello": "App"}
+    assert response.json() == {"Hello": "Shop Scout is running"}
 
 
 @pytest.mark.asyncio
