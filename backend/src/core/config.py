@@ -14,6 +14,7 @@ class AppSettings(BaseSettings):
     zakaz_api_base_url: str = Field(default="https://stores-api.zakaz.ua")
     log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(default="INFO")
     model_config = SettingsConfigDict(env_file="../.env", env_file_encoding="utf-8")
+    root_path: str = Field(default="/shop_scout")
 
 
 with open(BASE_DIR.joinpath(PROJECT_FILE), "rb") as file:
