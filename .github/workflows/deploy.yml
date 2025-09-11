@@ -19,6 +19,9 @@ jobs:
     environment: production
     env:
       SHOP_SCOUT_URL: ${{ vars.SHOP_SCOUT_URL }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
 
     steps:
       - name: Log deployment info
@@ -28,22 +31,70 @@ jobs:
           echo "PR: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}"
           echo "Author: ${{ github.event.pull_request.user.login }}"
 
-      - name: Deploy to production
+      - name: Setup SSH
         run: |
-          echo "📦 Deploying to production server..."
-          ssh vps 'bash /home/deploy/apps/shop_scout/deploy.sh'
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf "Host vps\n  HostName %s\n  User %s\n  Port %s\n  StrictHostKeyChecking no\n" \
+            "$SSH_HOST" "$SSH_USER" "$SSH_PORT" >> ~/.ssh/config
+
+      - name: Deploy on server (root)
+        run: |
+          ssh vps 'bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          APP_DIR=/root/apps/shop_scout
+          REPO_DIR="$APP_DIR/shop_scout"
+          REPO_URL="https://github.com/kutsevol/shop_scout.git"
+          COMPOSE="-f docker-compose.prod.yaml"
+
+          mkdir -p "$APP_DIR"
+          if [ -d "$REPO_DIR/.git" ]; then
+            cd "$REPO_DIR"
+            echo "[*] Updating repo..."
+            git fetch --all --prune
+            git reset --hard origin/main
+          else
+            echo "[*] Cloning repo..."
+            rm -rf "$REPO_DIR"
+            git clone --depth 1 "$REPO_URL" "$REPO_DIR"
+            cd "$REPO_DIR"
+          fi
+
+          echo "[*] Build & up..."
+          docker compose $COMPOSE up -d --build --force-recreate
+
+          echo "[*] Healthcheck upstream..."
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:9003/openapi.json >/dev/null && break
+            sleep 2
+          done
+
+          echo "[*] Reload Caddy (if running)"
+          systemctl reload caddy || true
+
+          echo "[*] Done."
+          REMOTE
 
       - name: Verify via Caddy (public URL)
         run: |
           echo "🔍 Verifying deployment through Caddy..."
           curl --fail --silent --show-error \
                --retry 10 --retry-all-errors --max-time 5 \
-               "$SHOP_SCOUT_URL/"
+               "${SHOP_SCOUT_URL%/}/"
           echo "✅ Health check passed (Caddy/public)"
+
+      - name: Verify public OpenAPI
+        run: |
+          curl --fail --silent --show-error \
+               --retry 10 --retry-all-errors --max-time 5 \
+               "${SHOP_SCOUT_URL%/}/openapi.json" >/dev/null
+          echo "✅ OpenAPI (public) OK"
 
       - name: Verify on server (localhost:9003)
         run: |
-          ssh vps 'curl --fail --silent --show-error http://127.0.0.1:9003/'
+          ssh vps 'curl --fail --silent --show-error http://127.0.0.1:9003/openapi.json >/dev/null'
           echo "✅ Health check passed (localhost:9003)"
 
       - name: Deployment success
