@@ -33,7 +33,7 @@ make test           # Run tests
 make test-verbose   # Run tests with verbose output
 make test-coverage  # Run tests with coverage report
 make lint           # Run linting (ruff, mypy)
-make format         # Format code (black, isort, ruff)
+make format         # Format code (isort, ruff)
 make build          # Build for production
 ```
 
@@ -134,7 +134,6 @@ make pre-commit-run       # Run all hooks
 
 Pre-commit automatically runs:
 - **ruff** - Fast Python linter
-- **black** - Code formatter
 - **isort** - Import sorter
 - **mypy** - Type checker
 
