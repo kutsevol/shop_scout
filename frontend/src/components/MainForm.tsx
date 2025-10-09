@@ -20,19 +20,23 @@ export const MainForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    getCountries()
-      .then((countries) => {
-        setCountries(
-          countries.sort((country1, country2) =>
-            country1.name.localeCompare(country2.name)
-          )
+    const fetchCountries = async () => {
+      setLoading(true);
+      try {
+        const countries = await getCountries();
+        const sortedCountries = [...countries].sort((a, b) =>
+          a.name.localeCompare(b.name)
         );
-      })
-      .catch((err) => {
+
+        setCountries(sortedCountries);
+      } catch (err: any) {
         setErrorMessage(err.message);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCountries();
   }, []);
 
   const handleChangeCountry1 = (value: string) => {

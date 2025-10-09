@@ -20,13 +20,13 @@ export const CountriesSelect = ({
   value,
   helperText,
   countries,
-  onCountryChange = () => undefined,
+  onCountryChange,
 }: CountriesSelectProps) => {
   const [valueSelect, setValueSelect] = useState(value);
 
   const handleCountryChange = (event: SelectChangeEvent) => {
     setValueSelect(event.target.value);
-    onCountryChange(event.target.value);
+    onCountryChange?.(event.target.value);
   };
 
   return (
