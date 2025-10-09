@@ -19,11 +19,11 @@ function withResolveDelay<T>(fn: T, delay: number) {
 // To have autocompletion and avoid mistypes
 type RequestMethod = "GET" | "POST" | "PATCH";
 
-async function request(
+async function request<T>(
   url: string,
   requestParams?: Product,
   method: RequestMethod = "GET"
-): Promise<Country[] | Product[]> {
+): Promise<T> {
   const options: RequestInit = { method };
 
   if (requestParams) {
@@ -45,7 +45,7 @@ async function request(
 }
 
 export const client = {
-  get: (url: string) => request(url),
-  post: (url: string, data: any) => request(url, data, "POST"),
-  patch: (url: string, data: any) => request(url, data, "PATCH"),
+  get: <T>(url: string) => request<T>(url),
+  post: <T>(url: string, data: any) => request<T>(url, data, "POST"),
+  patch: <T>(url: string, data: any) => request<T>(url, data, "PATCH"),
 };
