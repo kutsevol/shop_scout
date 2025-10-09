@@ -2,7 +2,6 @@ import uvicorn
 from fastapi import FastAPI
 
 from api.routers import countries, index, shops
-from core.config import settings
 from core.logging_config import log_config
 
 app = FastAPI()
