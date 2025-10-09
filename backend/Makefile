@@ -1,7 +1,7 @@
 # Backend Makefile
 # =================
 
-.PHONY: help install dev test lint format build docker-build docker-up docker-down docker-logs clean
+.PHONY: help install dev test test-cov lint format build docker-build docker-up docker-down docker-logs clean clean-docker pre-commit-install pre-commit-run run start stop docker-restart docker-shell docker-prod-build docker-prod-up docker-prod-down docker-prod-logs docker-prod-shell
 
 # Default target
 help: ## Show backend commands
@@ -54,25 +54,46 @@ build: ## Build backend (install production dependencies)
 # Docker
 docker-build: ## Build backend Docker container
 	@echo "Building backend Docker container..."
-	docker-compose -f ../docker-compose.yaml build
+	docker-compose -f docker-compose.dev.yaml build
 
 docker-up: ## Start backend Docker container
 	@echo "Starting backend Docker container..."
-	docker-compose up -d
+	docker-compose -f docker-compose.dev.yaml up -d
 
 docker-down: ## Stop backend Docker container
 	@echo "Stopping backend Docker container..."
-	docker-compose down
+	docker-compose -f docker-compose.dev.yaml down
 
 docker-logs: ## Show backend Docker logs
 	@echo "Showing backend Docker logs..."
-	docker-compose logs -f
+	docker-compose -f docker-compose.dev.yaml logs -f
 
 docker-restart: docker-down docker-up ## Restart backend Docker container
 
 docker-shell: ## Access running backend container shell
 	@echo "Accessing backend container shell..."
-	docker-compose exec backend bash
+	docker-compose -f docker-compose.dev.yaml exec backend bash
+
+# Production Docker targets
+docker-prod-build: ## Build backend production Docker container
+	@echo "Building backend production Docker container..."
+	docker-compose -f ../docker-compose.prod.yaml build
+
+docker-prod-up: ## Start backend production Docker container
+	@echo "Starting backend production Docker container..."
+	docker-compose -f ../docker-compose.prod.yaml up -d
+
+docker-prod-down: ## Stop backend production Docker container
+	@echo "Stopping backend production Docker container..."
+	docker-compose -f ../docker-compose.prod.yaml down
+
+docker-prod-logs: ## Show backend production Docker logs
+	@echo "Showing backend production Docker logs..."
+	docker-compose -f ../docker-compose.prod.yaml logs -f
+
+docker-prod-shell: ## Access running backend production container shell
+	@echo "Accessing backend production container shell..."
+	docker-compose -f ../docker-compose.prod.yaml exec backend bash
 
 # Cleanup
 clean: ## Clean backend build artifacts
@@ -83,7 +104,7 @@ clean: ## Clean backend build artifacts
 
 clean-docker: ## Clean backend Docker resources
 	@echo "Cleaning backend Docker resources..."
-	docker-compose down --volumes --remove-orphans
+	docker-compose -f docker-compose.dev.yaml down --volumes --remove-orphans
 
 # Shortcuts
 run: dev ## Alias for dev

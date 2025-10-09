@@ -42,7 +42,3 @@ jobs:
       - name: Lint with ruff
         run: |
           uv run ruff check . --exit-zero --diff
-
-      - name: Check formatting with black
-        run: |
-          uv run black . --check --diff

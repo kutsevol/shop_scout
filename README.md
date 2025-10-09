@@ -15,13 +15,18 @@ Shop Scout is a full-stack application that helps users:
 ### For Users (Just Run the App)
 
 ```bash
-# Clone and start with Docker
+# Clone and setup
 git clone <your-repo-url>
 cd shop_scout
-make docker-up
+make setup
+
+# If make dev fails, try individual components:
+make dev-backend    # In one terminal
+make dev-frontend   # In another terminal
 ```
 
 → **Backend**: http://localhost:8000
+→ **Frontend**: http://localhost:5173 (or next available port)
 → **API Docs**: http://localhost:8000/docs
 
 ### For Developers (Full Setup)
@@ -35,7 +40,9 @@ make dev
 ```
 
 → **Backend**: http://localhost:8000
-→ **Frontend**: http://localhost:5173
+→ **Frontend**: http://localhost:5173 (or 5174 if 5173 is busy)
+
+⚠️ **Note**: `make dev` may fail due to configuration issues. See [Troubleshooting](#-troubleshooting) if you get errors.
 
 ## 💻 Development Workflows
 
@@ -86,27 +93,79 @@ See [backend README](backend/README.md) for detailed backend development.
 ### Quick Docker Start
 
 ```bash
-# Backend API only (always works)
+# Backend API only (currently available)
 make docker-backend-up
 
-# Full-stack (when frontend Dockerfile is ready)
-make docker-up
+# Full-stack Docker setup is not yet implemented
+# Use: make dev (for development with separate processes)
 ```
 
 ### Docker Workflows
 
-#### **Backend-Only Development**
+#### **Backend-Only Development** (Available)
 ```bash
 make docker-backend-up      # Start API
 make docker-backend-logs    # View logs
 make docker-backend-down    # Stop API
 ```
 
-#### **Full-Stack Development**
+#### **Full-Stack Development** (Not Yet Available)
+❌ **Note**: Full-stack Docker setup (`docker-compose.yaml`) is not yet implemented.
+
+For now, use separate development servers:
 ```bash
-make docker-up              # Start everything
-make docker-logs            # View all logs
-make docker-down            # Stop everything
+make dev                    # Start both backend and frontend (separate processes)
+# OR
+make dev-backend            # Backend: http://localhost:8000
+make dev-frontend           # Frontend: http://localhost:5173
+```
+
+## 🚀 Production Deployment
+
+### Production Commands
+
+```bash
+# Build production images
+make prod-build             # Build backend for production
+
+# Start/stop production stack
+make prod-up                # Start production backend (behind Caddy)
+make prod-down              # Stop production backend
+make prod-restart           # Restart production stack
+
+# Monitor production
+make prod-logs              # View production logs
+make prod-ps                # Show production containers status
+make prod-health            # Check production health
+```
+
+### Production Environment
+
+The production setup uses a separate Docker Compose file (`docker-compose.prod.yaml`) and runs the backend behind Caddy reverse proxy.
+
+**Environment Variables:**
+- `SHOP_SCOUT_URL` - Production URL (default: `http://91.238.105.236/shop_scout`)
+
+**Production Health Check:**
+```bash
+# Check if production is running
+make prod-health
+
+# Or manually
+curl -fsS "http://91.238.105.236/shop_scout/" && echo "✅ Up" || echo "❌ Down"
+```
+
+## ⚡ Quick Shortcuts
+
+For convenience, some commonly used commands have shorter aliases:
+
+```bash
+# Development shortcuts
+make run                    # Same as: make dev
+
+# Docker shortcuts (NOT WORKING - no docker-compose.yaml)
+# make start                # Would be: make docker-up (❌ not implemented)
+# make stop                 # Would be: make docker-down (❌ not implemented)
 ```
 
 
@@ -140,12 +199,30 @@ make docker-down            # Stop everything
 
 ## 🔧 Troubleshooting
 
+### "make dev fails immediately!"
+
+**Backend Error: `Extra inputs are not permitted [forwarded_allow_ips]`**
+```bash
+# Fix: Remove problematic env variable or update config
+echo "# FORWARDED_ALLOW_IPS=127.0.0.1,::1" > .env  # Comment it out
+# OR
+cd backend && make dev  # Start backend separately to debug
+```
+
+**Frontend Port Conflict: `Port 5173 is in use`**
+```bash
+# Kill existing frontend process
+lsof -ti:5173 | xargs kill -9
+# OR let it use the next available port (5174)
+```
+
 ### "Nothing works!"
 
 ```bash
 # Nuclear option - clean everything and start fresh
 make clean-docker
 make install
+# Fix backend config first, then:
 make dev
 ```
 
@@ -154,7 +231,10 @@ make dev
 ```bash
 # Clean Docker completely
 make clean-docker
-make docker-up
+# Then start backend-only Docker:
+make docker-backend-up
+# OR use development servers (after fixing config):
+make dev
 ```
 
 ### "Tests are failing!"
@@ -211,22 +291,40 @@ This project uses **two Makefiles** for better organization:
 ### **Quick Reference**
 ```bash
 # Global commands (from root)
-make help           # Show all global commands
-make setup          # Complete setup for new developers
-make dev            # Start both backend and frontend
-make docker-up      # Start full-stack with Docker
+make help               # Show all global commands
+make setup              # Complete setup for new developers
+make dev                # Start both backend and frontend (separate processes)
+# make docker-up        # ❌ Not implemented (no docker-compose.yaml)
+# make docker-down      # ❌ Not implemented
+# make docker-logs      # ❌ Not implemented
+
+# Shortcuts (aliases)
+make run                # Alias for: make dev
+# make start            # Alias for: make docker-up (❌ not implemented)
+# make stop             # Alias for: make docker-down (❌ not implemented)
 
 # Backend-specific commands
-cd backend          # Enter backend directory
-make help           # Show backend commands
-make test           # Run backend tests
-make format         # Format backend code
-make docker-up      # Start only backend with Docker
+cd backend              # Enter backend directory
+make help               # Show backend commands
+make test               # Run backend tests
+make format             # Format backend code
+make docker-up          # Start only backend with Docker
 
 # Or use delegation from root
-make backend-help   # Show backend commands from root
-make test-backend   # Run backend tests from root
+make backend-help       # Show backend commands from root
+make test-backend       # Run backend tests from root
+
+# Production (server)
+make prod-build         # Build prod backend image
+make prod-up            # Start prod backend (Caddy proxy)
+make prod-down          # Stop prod backend
+make prod-restart       # Restart prod backend
+make prod-logs          # Tail prod backend logs
+make prod-ps            # Show prod containers
+make prod-health        # Check prod health (uses SHOP_SCOUT_URL)
 ```
+
+Note: Production commands use docker-compose.prod.yaml and respect SHOP_SCOUT_URL (default: http://your-domain/shop_scout).
 
 ---
 
