@@ -84,7 +84,7 @@ async def test_search_products(async_client):
         pytest.skip("No stores available to test product search")
 
     store_id = stores[0]["id"]
-    products = await search_products(store_id=store_id, query="milk")
+    products = await search_products(store_id=store_id, query="milk", page=1)
     assert isinstance(products, list)
     for product in products:
         assert "store_id" in product

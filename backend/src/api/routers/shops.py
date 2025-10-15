@@ -36,9 +36,9 @@ async def get_shop(shop_id: str) -> JSONResponse:
 
 @router.get("/{shop_id}/search/", response_model=list[Product])
 async def get_product_from_shop(
-    shop_id: str, product: str = Query(..., description="Product name to search for")
+    shop_id: str, product: str = Query(..., description="Product name to search for"), page: int = 1
 ) -> JSONResponse:
-    results = await search_products(store_id=shop_id, query=product)
+    results = await search_products(store_id=shop_id, query=product, page=page)
     products = [Product(**product) for product in results]
     logger.info(f"Found {len(products)} products in shop {shop_id} for query '{product}'")
     return JSONResponse(content=jsonable_encoder(products))
