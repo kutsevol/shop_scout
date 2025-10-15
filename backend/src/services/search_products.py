@@ -8,10 +8,10 @@ BASE_URL = settings.zakaz_api_base_url
 HEADERS = {"Accept": "application/json"}
 
 
-async def search_products(store_id: str, query: str) -> list[dict]:
+async def search_products(store_id: str, query: str, page: int) -> list[dict]:
     async with httpx.AsyncClient() as client:
         url = f"{BASE_URL}/stores/{store_id}/products/search/"
-        params = {"q": query}
+        params: dict[str, str | int] = {"q": query, "page": page}
 
         try:
             response = await client.get(url, headers=HEADERS, params=params, timeout=10)

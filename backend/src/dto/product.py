@@ -45,7 +45,7 @@ class Product(BaseModel):
     pack_amount: int | None = Field(default=None)
     country: str | None = Field(default=None)
     producer: Producer | None = Field(default=None)
-    custom_ribbons: list[str] | None = Field(default=None)
+    custom_ribbons: list[dict] | None = Field(default=None)
     img: Img | None = Field(default=None)
     gallery: list[Img] | None = Field(default=None)
     is_uber_item: bool | None = Field(default=None)
