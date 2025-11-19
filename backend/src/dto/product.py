@@ -7,4 +7,4 @@ class Product(BaseModel):
     price: int | None = Field(default=None)
     category_id: str | None = Field(default=None)
     country: str | None = Field(default=None)
-    store_id: str | int = Field(default=None)
+    store_id: str | int = Field()

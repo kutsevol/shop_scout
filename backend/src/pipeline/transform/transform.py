@@ -29,7 +29,7 @@ class ProductPriceEntity:
 
 def transform_data(
     products: list[Product], latest_prices: dict[str, float], load_date: datetime | None = None
-):
+) -> dict[str, list]:
     load_date = load_date or datetime.now()
 
     product_entities = {}
