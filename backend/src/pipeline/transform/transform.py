@@ -39,6 +39,9 @@ def transform_data(
     seen_prices_today = set()
 
     for p in products:
+        if p.store_id is None:
+            continue
+
         if not p.ean or not p.title or not p.category_id:
             continue
 
@@ -51,13 +54,16 @@ def transform_data(
         title = p.title.strip()
         category_id = p.category_id.strip()
 
-        categories[category_id] = CategoryEntity(
-            id=category_id,
-            store_id=str(p.store_id),
-        )
+        category_key = (category_id, str(p.store_id))
+        if category_key not in categories:
+            categories[category_key] = CategoryEntity(
+                id=category_id,
+                store_id=str(p.store_id),
+            )
 
-        if ean not in product_entities:
-            product_entities[ean] = ProductEntity(
+        product_key = (ean, str(p.store_id))
+        if product_key not in product_entities:
+            product_entities[product_key] = ProductEntity(
                 ean=ean,
                 title=title,
                 category_id=category_id,
@@ -65,10 +71,11 @@ def transform_data(
                 store_id=p.store_id,
             )
 
-        if ean not in seen_prices_today:
+        price_key = (ean, str(p.store_id))
+        if price_key not in seen_prices_today:
             last_price = latest_prices.get(ean)
 
-            if last_price is None or float(last_price) != float(price):
+            if last_price is None or abs(float(last_price) - float(price)) > 0.001:
                 price_entities.append(
                     ProductPriceEntity(
                         ean=ean,
@@ -78,7 +85,7 @@ def transform_data(
                     )
                 )
 
-            seen_prices_today.add(ean)
+            seen_prices_today.add(price_key)
 
     return {
         "products": list(product_entities.values()),
