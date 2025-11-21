@@ -1,94 +1,80 @@
-from dataclasses import dataclass
-from datetime import datetime
+from typing import TypedDict
 
 from dto.product import Product
 
 
-@dataclass
-class ProductEntity:
+class ProductEntity(TypedDict):
     ean: str
     title: str
     category_id: str
-    country: str | None
+    producer: str | None
     store_id: str | int
+    categories: str
 
 
-@dataclass
-class CategoryEntity:
+class CategoryEntity(TypedDict):
     id: str | int
     store_id: str
 
 
-@dataclass
-class ProductPriceEntity:
+class ProductPriceEntity(TypedDict):
     ean: str
     store_id: str | int
     price: float
-    date: datetime
 
 
 def transform_data(
-    products: list[Product], latest_prices: dict[str, float], load_date: datetime | None = None
-) -> dict[str, list]:
-    load_date = load_date or datetime.now()
-
+    products: list[Product],
+) -> dict[str, list[ProductEntity] | list[CategoryEntity] | list[ProductPriceEntity]]:
     product_entities = {}
-    categories = {}
-    price_entities = []
-
-    seen_prices_today = set()
+    category_entities = {}
+    price_entities = {}
 
     for p in products:
-        if p.store_id is None:
+        if (
+            p.store_id is None
+            or p.ean is None
+            or p.title is None
+            or p.category_id is None
+            or p.price is None
+        ):
             continue
-
-        if not p.ean or not p.title or not p.category_id:
-            continue
-
-        if p.price is None:
-            continue
-
-        price = float(p.price) / 100 if isinstance(p.price, int) else float(p.price)
 
         ean = str(p.ean).strip()
         title = p.title.strip()
+        price = p.price
         category_id = p.category_id.strip()
+        producer = str(p.producer).strip()
 
         category_key = (category_id, str(p.store_id))
-        if category_key not in categories:
-            categories[category_key] = CategoryEntity(
+        if category_key not in category_entities:
+            category_entities[category_key] = CategoryEntity(
                 id=category_id,
                 store_id=str(p.store_id),
             )
 
-        product_key = (ean, str(p.store_id))
-        if product_key not in product_entities:
-            product_entities[product_key] = ProductEntity(
+        key = (ean, str(p.store_id))
+        if key not in product_entities:
+            product_entities[key] = ProductEntity(
                 ean=ean,
                 title=title,
                 category_id=category_id,
-                country=p.country,
+                producer=producer,
                 store_id=p.store_id,
+                categories=category_id,
             )
+        else:
+            product_entities[key]["categories"] += f", {category_id}"
 
-        price_key = (ean, str(p.store_id))
-        if price_key not in seen_prices_today:
-            last_price = latest_prices.get(ean)
-
-            if last_price is None or abs(float(last_price) - float(price)) > 0.001:
-                price_entities.append(
-                    ProductPriceEntity(
-                        ean=ean,
-                        store_id=p.store_id,
-                        price=price,
-                        date=load_date,
-                    )
-                )
-
-            seen_prices_today.add(price_key)
+        if key not in price_entities:
+            price_entities[key] = ProductPriceEntity(
+                ean=ean,
+                store_id=p.store_id,
+                price=price,
+            )
 
     return {
         "products": list(product_entities.values()),
-        "categories": list(categories.values()),
-        "prices": price_entities,
+        "categories": list(category_entities.values()),
+        "prices": list(price_entities.values()),
     }

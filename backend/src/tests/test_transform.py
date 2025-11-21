@@ -1,117 +1,119 @@
 import pytest
+from polyfactory.factories.pydantic_factory import ModelFactory
 
 from dto.product import Product
 from pipeline.transform.transform import (
-    ProductEntity,
-    ProductPriceEntity,
     transform_data,
 )
 
 
-def make_product(
-    ean="123",
-    title="Test",
-    price=10000,
-    category_id="cat",
-    country="UA",
-    store_id="1",
-):
-    return Product(
-        ean=ean,
-        title=title,
-        price=price,
-        category_id=category_id,
-        country=country,
-        store_id=store_id,
-    )
+class ProductFactory(ModelFactory[Product]):
+    __model__ = Product
 
 
-def test_transform_basic():
-    products = [
-        make_product(ean="111", price=23900, category_id="meat"),
-        make_product(ean="222", price=15000, category_id="milk"),
-    ]
+@pytest.mark.parametrize(
+    "override",
+    [
+        # base valid product
+        {
+            "ean": "1234567890123",
+            "title": "Test Product",
+            "category_id": "CAT1",
+            "store_id": 1,
+            "price": 10,
+        },
+        # another store
+        {
+            "ean": "1234567890123",
+            "title": "Test Product",
+            "category_id": "CAT1",
+            "store_id": 2,
+            "price": 20,
+        },
+        # another ean
+        {
+            "ean": "5555555555555",
+            "title": "Another Product",
+            "category_id": "CAT2",
+            "store_id": 1,
+            "price": 30,
+        },
+    ],
+)
+def test_transform_valid_single(override):
+    product: Product = ProductFactory.build(**override)
 
-    result = transform_data(products, latest_prices={})
-
-    assert len(result["products"]) == 2
-    assert len(result["categories"]) == 2
-    assert len(result["prices"]) == 2
-
-    p1 = result["products"][0]
-    assert isinstance(p1, ProductEntity)
-
-
-def test_price_normalization():
-    product = make_product(ean="111", price=23900)
-    result = transform_data([product], latest_prices={})
-    price_record = result["prices"][0]
-
-    assert price_record.price == pytest.approx(239.00)
-
-
-def test_unique_products_by_ean():
-    p1 = make_product(ean="111", title="A")
-    p2 = make_product(ean="111", title="A")
-
-    result = transform_data([p1, p2], latest_prices={})
+    result = transform_data([product])
 
     assert len(result["products"]) == 1
-    assert len(result["prices"]) == 1
-
-
-def test_categories_are_unique():
-    p1 = make_product(category_id="meat")
-    p2 = make_product(category_id="meat")
-
-    result = transform_data([p1, p2], latest_prices={})
-
     assert len(result["categories"]) == 1
-
-
-def test_price_versioning_no_change():
-    p = make_product(ean="111", price=23800)
-
-    latest_prices = {"111": 238.00}
-
-    result = transform_data([p], latest_prices)
-
-    assert len(result["prices"]) == 0
-
-
-def test_price_versioning_with_change():
-    p = make_product(ean="111", price=23900)
-
-    latest_prices = {"111": 238.00}
-
-    result = transform_data([p], latest_prices)
-
     assert len(result["prices"]) == 1
-    assert isinstance(result["prices"][0], ProductPriceEntity)
+
+    prod = result["products"][0]
+    cat = result["categories"][0]
+    price = result["prices"][0]
+
+    assert prod["ean"] == override["ean"]
+    assert prod["category_id"] == override["category_id"]
+    assert prod["store_id"] == override["store_id"]
+    assert prod["title"].strip() == override["title"].strip()
+
+    assert cat["id"] == override["category_id"]
+    assert cat["store_id"] == str(override["store_id"])
+
+    assert price["price"] == override["price"]
 
 
-def test_invalid_rows_are_skipped():
-    p1 = make_product(ean="", title="X")
-    p2 = make_product(ean="111", title="")
-    p3 = make_product(ean="222", category_id="")
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"ean": None},
+        {"title": None},
+        {"category_id": None},
+        {"price": None},
+        {"store_id": None},
+    ],
+)
+def test_invalid_product_skipped(override):
+    product: Product = ProductFactory.build(**override)
+    result = transform_data([product])
 
-    result = transform_data([p1, p2, p3], latest_prices={})
-
-    assert len(result["products"]) == 0
-    assert len(result["prices"]) == 0
-    assert len(result["categories"]) == 0
+    assert result["products"] == []
+    assert result["categories"] == []
+    assert result["prices"] == []
 
 
-def test_strip_fields():
-    p = make_product(
-        ean="  111  ",
-        title="  Test Product ",
-        category_id="  cat1 ",
-    )
+def test_categories_accumulate():
+    p1 = ProductFactory.build(ean="111", store_id=1, title="Prod A", category_id="A", price=10)
+    p2 = ProductFactory.build(ean="111", store_id=1, title="Prod A", category_id="B", price=20)
 
-    result = transform_data([p], latest_prices={})
-    product = result["products"][0]
+    result = transform_data([p1, p2])
 
-    assert product.ean == "111"
-    assert product.title == "Test Product"
-    assert product.category_id == "cat1"
+    products = result["products"]
+    assert len(products) == 1
+
+    assert products[0]["categories"] == "A, B"
+
+
+def test_unique_categories():
+    p1 = ProductFactory.build(ean="222", store_id=5, category_id="X", title="Product X", price=50)
+    p2 = ProductFactory.build(ean="999", store_id=5, category_id="Y", title="Product Y", price=100)
+
+    result = transform_data([p1, p2])
+
+    assert len(result["categories"]) == 2
+
+    category_ids = {cat["id"] for cat in result["categories"]}
+    assert category_ids == {"X", "Y"}
+
+
+def test_prices_created_per_ean_store():
+    p1 = ProductFactory.build(ean="100", store_id=1, category_id="A", title="AAA", price=199)
+    p2 = ProductFactory.build(ean="100", store_id=2, category_id="A", title="AAA", price=299)
+
+    result = transform_data([p1, p2])
+
+    prices = result["prices"]
+
+    assert len(prices) == 2
+    assert {pr["price"] for pr in prices} == {199, 299}
