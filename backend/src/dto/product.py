@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -10,7 +12,7 @@ class Product(BaseModel):
     store_id: str | int | None = Field(default=None)
 
     @field_validator("producer", mode="before")
-    def normalize_producer(cls, v) -> str | None:
+    def normalize_producer(cls, v: Any) -> str | None:
         if isinstance(v, dict):
             return v.get("trademark")
         return v
