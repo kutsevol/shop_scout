@@ -10,7 +10,7 @@ class Product(BaseModel):
     store_id: str | int | None = Field(default=None)
 
     @field_validator("producer", mode="before")
-    def normalize_producer(cls, v):
+    def normalize_producer(cls, v) -> str | None:
         if isinstance(v, dict):
             return v.get("trademark")
         return v
