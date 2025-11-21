@@ -44,7 +44,7 @@ def transform_data(
         title = p.title.strip()
         price = p.price
         category_id = p.category_id.strip()
-        producer = str(p.producer).strip()
+        producer = str(p.producer).strip() if p.producer else None
 
         category_key = (category_id, str(p.store_id))
         if category_key not in category_entities:
