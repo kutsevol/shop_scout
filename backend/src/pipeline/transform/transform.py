@@ -23,9 +23,15 @@ class ProductPriceEntity(TypedDict):
     price: float
 
 
+class TransformResult(TypedDict):
+    products: list[ProductEntity]
+    categories: list[CategoryEntity]
+    prices: list[ProductPriceEntity]
+
+
 def transform_data(
     products: list[Product],
-) -> dict[str, list[ProductEntity] | list[CategoryEntity] | list[ProductPriceEntity]]:
+) -> TransformResult:
     product_entities = {}
     category_entities = {}
     price_entities = {}
