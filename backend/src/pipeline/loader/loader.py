@@ -47,7 +47,7 @@ class Product(Base):
 
 
 class ProductPrice(Base):
-    __tablename__ = "prises"
+    __tablename__ = "prices"
 
     ean: Mapped[str] = mapped_column(String, primary_key=True)
     store_id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -64,23 +64,25 @@ class DataLoader:
         self.engine = create_async_engine(dsn, echo=False)
         self.Session = async_sessionmaker(self.engine, expire_on_commit=False)
 
-    async def migrate(self):
+    async def migrate(self) -> None:
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-    async def load_categories(self, session: AsyncSession, categories: list[CategoryEntity]):
+    async def load_categories(
+        self, session: AsyncSession, categories: list[CategoryEntity]
+    ) -> None:
         objs = [Category(**c) for c in categories]
         session.add_all(objs)
 
-    async def load_products(self, session: AsyncSession, products: list[ProductEntity]):
+    async def load_products(self, session: AsyncSession, products: list[ProductEntity]) -> None:
         objs = [Product(**p) for p in products]
         session.add_all(objs)
 
-    async def load_prices(self, session: AsyncSession, prices: list[ProductPriceEntity]):
+    async def load_prices(self, session: AsyncSession, prices: list[ProductPriceEntity]) -> None:
         objs = [ProductPrice(**p) for p in prices]
         session.add_all(objs)
 
-    async def load(self, transformed_data: TransformResult):
+    async def load(self, transformed_data: TransformResult) -> None:
         async with self.Session() as session:
             async with session.begin():
                 await self.load_categories(session, transformed_data.get("categories") or [])
