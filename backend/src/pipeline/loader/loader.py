@@ -1,90 +1,95 @@
-from sqlalchemy import ForeignKeyConstraint, Index, Integer, String
+from __future__ import annotations
+
+from typing import Any, Dict, List, Mapping
+
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlmodel import SQLModel
 
-from pipeline.transform.transform import (
-    CategoryEntity,
-    ProductEntity,
-    ProductPriceEntity,
-    TransformResult,
-)
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-class Category(Base):
-    __tablename__ = "categories"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-    store_id: Mapped[str] = mapped_column(String, primary_key=True)
-
-    __table_args__ = (Index("idx_categories_store", "store_id"),)
-
-
-class Product(Base):
-    __tablename__ = "products"
-
-    ean: Mapped[str] = mapped_column(String, primary_key=True)
-    store_id: Mapped[str] = mapped_column(String, primary_key=True)
-    title: Mapped[str] = mapped_column(String)
-
-    category_id: Mapped[str] = mapped_column(String)
-
-    producer: Mapped[str | None] = mapped_column(String, nullable=True)
-    categories: Mapped[str] = mapped_column(String)
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["category_id", "store_id"],
-            ["categories.id", "categories.store_id"],
-            ondelete="RESTRICT",
-        ),
-        Index("idx_products_title", "title"),
-        Index("idx_products_category", "category_id"),
-    )
-
-
-class ProductPrice(Base):
-    __tablename__ = "prices"
-
-    ean: Mapped[str] = mapped_column(String, primary_key=True)
-    store_id: Mapped[str] = mapped_column(String, primary_key=True)
-    price: Mapped[str] = mapped_column(Integer)
-
-    __table_args__ = (
-        Index("idx_prises_store", "store_id"),
-        Index("idx_prises_price", "price"),
-    )
+from dto.models import Category, Product, ProductCategoryLink, ProductPrice
 
 
 class DataLoader:
-    def __init__(self, dsn: str) -> None:
-        self.engine = create_async_engine(dsn, echo=False)
-        self.Session = async_sessionmaker(self.engine, expire_on_commit=False)
+    def __init__(self, dsn: str, echo: bool = False) -> None:
+        self.engine = create_async_engine(dsn, echo=echo, future=True)
+        self.Session = async_sessionmaker(self.engine, expire_on_commit=False, autoflush=False)
 
     async def migrate(self) -> None:
+        """Dev-only — creates tables. Production uses Alembic."""
         async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+            await conn.run_sync(SQLModel.metadata.create_all)
 
-    async def load_categories(
-        self, session: AsyncSession, categories: list[CategoryEntity]
+    async def _bulk_upsert(
+        self,
+        session: AsyncSession,
+        table,
+        rows: List[Dict],
+        conflict_col: str | List[str],
     ) -> None:
-        objs = [Category(**c) for c in categories]
-        session.add_all(objs)
+        if not rows:
+            return
 
-    async def load_products(self, session: AsyncSession, products: list[ProductEntity]) -> None:
-        objs = [Product(**p) for p in products]
-        session.add_all(objs)
+        if isinstance(conflict_col, str):
+            conflict_col = [conflict_col]
 
-    async def load_prices(self, session: AsyncSession, prices: list[ProductPriceEntity]) -> None:
-        objs = [ProductPrice(**p) for p in prices]
-        session.add_all(objs)
+        model_columns = set(table.model_fields.keys())
 
-    async def load(self, transformed_data: TransformResult) -> None:
+        BATCH_SIZE = 500
+        for i in range(0, len(rows), BATCH_SIZE):
+            batch = rows[i : i + BATCH_SIZE]
+
+            cleaned_batch = [{k: v for k, v in row.items() if k in model_columns} for row in batch]
+
+            stmt = insert(table).values(cleaned_batch)
+
+            update_cols = {
+                col: stmt.excluded[col]
+                for col in cleaned_batch[0].keys()
+                if col not in conflict_col
+            }
+
+            if update_cols:
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=conflict_col,
+                    set_=update_cols,
+                )
+            else:
+                stmt = stmt.on_conflict_do_nothing(index_elements=conflict_col)
+
+            await session.execute(stmt)
+
+    # ---- UPSERT methods ----
+
+    async def upsert_categories(self, session: AsyncSession, categories: List[Dict]) -> None:
+        await self._bulk_upsert(session, Category, categories, conflict_col="id")
+
+    async def upsert_products(self, session: AsyncSession, products: List[Dict]) -> None:
+        await self._bulk_upsert(session, Product, products, conflict_col="ean")
+
+    async def upsert_prices(self, session: AsyncSession, prices: List[Dict]) -> None:
+        # composite PK = (ean, store_id)
+        await self._bulk_upsert(
+            session,
+            ProductPrice,
+            prices,
+            conflict_col=["ean", "store_id"],
+        )
+
+    async def upsert_product_category_links(self, session: AsyncSession, links: List[Dict]) -> None:
+        # composite PK = (ean, category_id)
+        await self._bulk_upsert(
+            session,
+            ProductCategoryLink,
+            links,
+            conflict_col=["ean", "category_id"],
+        )
+
+    # ---- Main loader ----
+    async def load(self, data: Mapping[str, Any]) -> None:
+        """Load everything in a single transaction (atomic)."""
         async with self.Session() as session:
             async with session.begin():
-                await self.load_categories(session, transformed_data.get("categories") or [])
-                await self.load_products(session, transformed_data.get("products") or [])
-                await self.load_prices(session, transformed_data.get("prices") or [])
+                await self.upsert_categories(session, data.get("categories", []))
+                await self.upsert_products(session, data.get("products", []))
+                await self.upsert_prices(session, data.get("prices", []))
+                await self.upsert_product_category_links(session, data.get("links", []))

@@ -13,8 +13,11 @@ class AppSettings(BaseSettings):
     cors_origins: list[str] = Field(default=["http://localhost:5173"])
     zakaz_api_base_url: str = Field(default="https://stores-api.zakaz.ua")
     log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(default="INFO")
-    model_config = SettingsConfigDict(env_file="../.env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=["../.env", ".env"], env_file_encoding="utf-8")
     root_path: str = Field(default="/shop_scout")
+    database_url: str  # async URL
+    database_url_sync: str  # sync URL for Alembic
+    db_echo: bool = False
 
 
 with open(BASE_DIR.joinpath(PROJECT_FILE), "rb") as file:
