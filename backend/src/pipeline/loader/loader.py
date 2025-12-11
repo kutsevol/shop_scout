@@ -22,7 +22,7 @@ class DataLoader:
     async def _bulk_upsert(
         self,
         session: AsyncSession,
-        table,
+        table: type[SQLModel],
         rows: List[Dict],
         conflict_col: str | List[str],
     ) -> None:

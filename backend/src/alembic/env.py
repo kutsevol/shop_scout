@@ -21,7 +21,8 @@ sys.path.append(str(BASE_DIR))
 # Alembic Config
 config = context.config
 
-fileConfig(config.config_file_name)
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
 # Import all models automatically
 target_metadata = SQLModel.metadata
@@ -56,8 +57,10 @@ def do_run_migrations(connection: Connection) -> None:
 async def run_migrations_online() -> None:
     """Run migrations in online (async) mode."""
 
+    section = config.get_section(config.config_ini_section) or {}
+
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section),
+        section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
