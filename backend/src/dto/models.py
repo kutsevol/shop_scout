@@ -5,7 +5,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 
 # ──────────────── Category ────────────────
-class Category(SQLModel, table=True):  # type: ignore[call-arg]
+class Category(SQLModel, table=True):
     __tablename__ = "categories"
 
     id: str = Field(primary_key=True)
@@ -15,7 +15,7 @@ class Category(SQLModel, table=True):  # type: ignore[call-arg]
 
 
 # ──────────────── Product ────────────────
-class Product(SQLModel, table=True):  # type: ignore[call-arg]
+class Product(SQLModel, table=True):
     __tablename__ = "products"
 
     ean: str = Field(primary_key=True)
@@ -28,7 +28,7 @@ class Product(SQLModel, table=True):  # type: ignore[call-arg]
 
 
 # ──────────────── Link Table ────────────────
-class ProductCategoryLink(SQLModel, table=True):  # type: ignore[call-arg]
+class ProductCategoryLink(SQLModel, table=True):
     __tablename__ = "product_categories"
 
     ean: str = Field(foreign_key="products.ean", primary_key=True)
@@ -41,7 +41,7 @@ class ProductCategoryLink(SQLModel, table=True):  # type: ignore[call-arg]
 
 
 # ──────────────── Product Price ────────────────
-class ProductPrice(SQLModel, table=True):  # type: ignore[call-arg]
+class ProductPrice(SQLModel, table=True):
     __tablename__ = "product_prices"
 
     ean: str = Field(foreign_key="products.ean", primary_key=True)
