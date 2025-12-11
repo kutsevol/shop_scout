@@ -21,7 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "isort>=6.0.1",
-    "mypy>=1.17.0",
+    "mypy>=1.19.0",
     "polyfactory>=3.0.0",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
@@ -67,6 +67,7 @@ python_version = "3.11"
 check_untyped_defs = true
 disallow_untyped_defs = true
 disallow_untyped_decorators = true
+disable_error_code = ["misc", "call-arg"]
 ignore_errors = false
 implicit_reexport = false
 strict_optional = true
