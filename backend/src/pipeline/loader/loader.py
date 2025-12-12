@@ -39,6 +39,8 @@ class DataLoader:
             batch = rows[i : i + BATCH_SIZE]
 
             cleaned_batch = [{k: v for k, v in row.items() if k in model_columns} for row in batch]
+            if not cleaned_batch:
+                continue
 
             stmt = insert(table).values(cleaned_batch)
 

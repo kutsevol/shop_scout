@@ -8,7 +8,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 
-from alembic import context
+from alembic import context  # type: ignore[attr-defined]
 from core.config import settings
 
 # ─────────────────────────────────────────────
@@ -25,6 +25,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Import all models automatically
+from dto import models  # noqa
+
 target_metadata = SQLModel.metadata
 
 # Set DB URL dynamically from settings

@@ -9,17 +9,12 @@ from pipeline.extractor.extractor import extract_data
 from pipeline.loader.loader import DataLoader
 from pipeline.transform.transform import transform_data
 
-DSN = "postgresql+asyncpg://oleksandra@localhost:5432/shop_scout"
-
 
 async def create_tables() -> None:
     engine = create_async_engine(settings.database_url, echo=True)
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
     await engine.dispose()
-
-
-asyncio.run(create_tables())
 
 
 async def run_pipeline(store_id: str) -> None:
@@ -41,7 +36,7 @@ async def run_pipeline(store_id: str) -> None:
     ]
 
     # 3. LOAD
-    loader = DataLoader(DSN, echo=False)
+    loader = DataLoader(settings.database_url, echo=settings.db_echo)
 
     logging.info("Loading into database...")
     await loader.load(transformed)
@@ -50,4 +45,5 @@ async def run_pipeline(store_id: str) -> None:
 
 
 if __name__ == "__main__":
+    asyncio.run(create_tables())
     asyncio.run(run_pipeline(store_id="48215633"))

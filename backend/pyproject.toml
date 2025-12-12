@@ -59,8 +59,6 @@ ignore = ["E402"]
 [tool.ruff.lint.mccabe]
 max-complexity = 10
 
-[tool.ruff.mccabe]
-max-complexity = 2
 
 [tool.mypy]
 python_version = "3.11"
@@ -68,12 +66,12 @@ check_untyped_defs = true
 disallow_untyped_defs = true
 disallow_untyped_decorators = true
 disable_error_code = ["misc", "call-arg"]
+ignore_missing_imports = true
 ignore_errors = false
 implicit_reexport = false
 strict_optional = true
 strict_equality = true
 no_implicit_optional = true
-ignore_missing_imports = true
 disallow_untyped_calls = true
 disallow_incomplete_defs = true
 warn_unused_ignores = true
