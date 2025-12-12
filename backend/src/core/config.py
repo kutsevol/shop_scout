@@ -13,6 +13,7 @@ class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=["../.env", ".env"], env_file_encoding="utf-8")
 
     cors_origins: list[str] = Field(default=["http://localhost:5173"])
+    user_agent: str | None = None
     zakaz_api_base_url: str = Field(default="https://stores-api.zakaz.ua")
     log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(default="INFO")
     root_path: str = Field(default="/shop_scout")
