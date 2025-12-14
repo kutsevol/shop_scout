@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from dto.product import Product
 
@@ -20,13 +20,14 @@ class CategoryEntity(TypedDict):
 class ProductPriceEntity(TypedDict):
     ean: str
     store_id: str | int
-    price: float
+    price: int
 
 
 class TransformResult(TypedDict):
     products: list[ProductEntity]
     categories: list[CategoryEntity]
     prices: list[ProductPriceEntity]
+    links: list[dict[str, Any]]
 
 
 def transform_data(
@@ -83,4 +84,5 @@ def transform_data(
         "products": list(product_entities.values()),
         "categories": list(category_entities.values()),
         "prices": list(price_entities.values()),
+        "links": [],
     }
