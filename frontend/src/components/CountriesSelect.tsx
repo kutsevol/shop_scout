@@ -20,17 +20,17 @@ export const CountriesSelect = ({
   value,
   helperText,
   countries,
-  onCountryChange = () => {},
+  onCountryChange,
 }: CountriesSelectProps) => {
   const [valueSelect, setValueSelect] = useState(value);
 
   const handleCountryChange = (event: SelectChangeEvent) => {
     setValueSelect(event.target.value);
-    onCountryChange(event.target.value);
+    onCountryChange?.(event.target.value);
   };
 
   return (
-    <FormControl sx={{ minWidth: 400, flexGrow: 1 }}>
+    <FormControl sx={{ flexGrow: 1 }}>
       <Select
         value={valueSelect}
         onChange={handleCountryChange}

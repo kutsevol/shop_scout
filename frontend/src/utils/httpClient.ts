@@ -1,18 +1,51 @@
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5173/api";
+import type { Country } from "../types/country";
+import type { Product } from "../types/product";
+
+const BASE_URL = "/api";
 
 function wait(delay: number) {
-  return new Promise((resolve) => setTimeout(resolve, delay));
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
 }
 
-export async function getData<T>(url: string): Promise<T> {
-  return wait(500)
-    .then(() => fetch(BASE_URL + url))
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`${response.status} ${errorText}`);
-      }
-      return response.json();
-    });
+function withResolveDelay<T>(fn: T, delay: number) {
+  return async () => {
+    await wait(delay);
+    return fn;
+  };
 }
+
+// To have autocompletion and avoid mistypes
+type RequestMethod = "GET" | "POST" | "PATCH";
+
+async function request<T>(
+  url: string,
+  requestParams?: Product,
+  method: RequestMethod = "GET"
+): Promise<T> {
+  const options: RequestInit = { method };
+
+  if (requestParams) {
+    options.body = JSON.stringify(requestParams);
+    options.headers = {
+      "Content-Type": "application/json; charset=UTF-8",
+    };
+  }
+
+  const response = await fetch(BASE_URL + url, options);
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    const errorMessage = errorBody?.detail || response.statusText;
+    throw new Error(`HTTP error! status: ${response.status} - ${errorMessage}`);
+  }
+
+  return response.json();
+}
+
+export const client = {
+  get: <T>(url: string) => request<T>(url),
+  post: <T>(url: string, data: any) => request<T>(url, data, "POST"),
+  patch: <T>(url: string, data: any) => request<T>(url, data, "PATCH"),
+};
