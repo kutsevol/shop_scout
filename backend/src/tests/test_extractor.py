@@ -4,9 +4,9 @@ import httpx
 import pytest
 from httpx import MockTransport, Request, Response
 
-import pipeline.extractor.extractor as extractor
 from dto.category import Category
 from dto.product import Product
+from pipeline.extractor import extractor
 from pipeline.extractor.client import DEFAULT_HEADERS
 
 
